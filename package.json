@@ -1,0 +1,33 @@
+{
+  "name": "angular_node_wrangler",
+  "version": "1.0.0",
+  "description": "Note Wrangler\r Project for learning Angular\r goals:\r 1. Set up Gulp Server for angular app\r 2. Create App\r     2.1 Routing\r     2.2 Services\r     2.3 Directives\r     2.4 API",
+  "main": "main.js",
+  "scripts": {
+    "test": "the_test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jshcherba/AND.git"
+  },
+  "author": "George",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jshcherba/AND/issues"
+  },
+  "homepage": "https://github.com/Jshcherba/AND#readme",
+  "devDependencies": {
+    "browserify": "^13.1.1",
+    "connect-livereload": "^0.6.0",
+    "express": "^4.14.0",
+    "gulp": "^3.9.1",
+    "gulp-browserify": "^0.5.1",
+    "gulp-clean": "^0.3.2",
+    "gulp-concat": "^2.6.1",
+    "gulp-embedlr": "^0.5.2",
+    "gulp-jshint": "^2.0.4",
+    "gulp-livereload": "^3.8.1",
+    "gulp-util": "^3.0.7",
+    "tiny-lr": "^1.0.3"
+  }
+}
