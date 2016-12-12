@@ -1,82 +1,66 @@
-var MongoClient = require('mongodb').MongoClient,
-    assert = require('assert');
+var express = require('express');
+var mongoose = require('mongoose');
+var app = express();
+var userSchema = require("./model/user");
 
-var url = 'mongodb://localhost:27017/myproject';
-
-MongoClient.connect(url, function(err, db) {
-    assert.equal(null, err);
-    console.log("Connected successfully to server");
-    //insertDocuments(db, function() {
-    //    db.close();
-    //});
-    findDocuments(db, function() {
-        db.close();
+mongoose.connect('mongodb://localhost:27017/user', function (error) {
+    if (error)return console.log(error);
+    console.log("MongoDB: connection to database succesful!");
+    var serverApp = app.listen(80, function () {
+        console.log('Express server listening on port ' + serverApp.address().port);
     });
-    //updateDocument(db, function() {
-    //    db.close();
-    //});
-    //removeDocument(db, function() {
-    //    db.close();
-    //});
-    //indexCollection(db, function() {
-    //    db.close();
-    //});
 });
-var insertDocuments = function(db, callback) {
-    // Get the documents collection
-    var collection = db.collection('documents');
-    // Insert some documents
-    collection.insertMany([
-        {a : 1}, {a : 2}, {a : 3}
-    ], function(err, result) {
-        assert.equal(err, null);
-        assert.equal(3, result.result.n);
-        assert.equal(3, result.ops.length);
-        console.log("Inserted 3 documents into the collection");
-        callback(result);
+var db = mongoose.connection;
+db.on('error', function callback(err) {console.log("Database connection failed. Error: " + err);});
+db.once('open', function callback() {console.log("Database connection successful.");});
+
+var User = db.model('user', userSchema);
+
+// URLS management
+app.get('/', function (req, res) {
+
+    res.send("<a href='/users'>Show Users</a>");
+});
+
+app.get('/users', function (req, res) {
+    User.find({}, function (err, docs) {
+        res.json(docs);
     });
-};
-var findDocuments = function(db, callback) {
-    // Get the documents collection
-    var collection = db.collection('documents');
-    // Find some documents
-    collection.find({'a': 3}).toArray(function(err, docs) {
-        assert.equal(err, null);
-        console.log("Found the following records");
-        console.log(docs);
-        callback(docs);
-    });
-};
-var updateDocument = function(db, callback) {
-    // Get the documents collection
-    var collection = db.collection('documents');
-    // Update document where a is 2, set b equal to 1
-    collection.updateOne({ a : 2 }
-        , { $set: { b : 1 } }, function(err, result) {
-            assert.equal(err, null);
-            assert.equal(1, result.result.n);
-            console.log("Updated the document with the field a equal to 2");
-            callback(result);
-        });
-};
-var removeDocument = function(db, callback) {
-    // Get the documents collection
-    var collection = db.collection('documents');
-    // Insert some documents
-    collection.deleteOne({ a : 3 }, function(err, result) {
-        assert.equal(err, null);
-        assert.equal(1, result.result.n);
-        console.log("Removed the document with the field a equal to 3");
-        callback(result);
-    });
-};
-var indexCollection = function(db, callback) {
-    db.collection('documents').createIndex(
-        { "a": 1 },
-        null,
-        function(err, results) {
-            console.log(results);
-            callback();
+});
+
+app.post('/users/create', function (req, res) {
+    console.log("in /users/create");
+    var userModelJson = req.body;
+    var userModel = new User(userModelJson);
+
+    userModel.save(function(error) {
+        if(error) {
+            console.log(error);
+            return res.json({msg: "error"});
         }
-    );
+        console.log("user created: " + userModel.name);
+        res.json(userModel);
+    });
+});
+
+var user2 = new User({name:"ssss",age:14,address:"asdasd",active:true});
+
+
+user2.save(function(error) {
+    if(error) {
+        console.log(error);
+        return res.json({msg: "error"});
+    }
+    console.log("user created: " + user2.name);
+});
+
+
+
+var endMongoConnection = function() {
+    mongoose.connection.close(function () {
+        process.exit(0);
+    });
 };
+
+// If the Node process ends, close the Mongoose connection
+process.on('SIGINT', endMongoConnection).on('SIGTERM', endMongoConnection);
