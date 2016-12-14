@@ -20,7 +20,7 @@ gulp.task('browserify', function() {
             debug: true
         }))
         .pipe(concat('bundle.js'))
-        .pipe(gulp.dest('dist/js'));
+        .pipe(gulp.dest('dist/public/js'));
 });
 
 gulp.task('watch', ['lint', 'sass'], function() {
@@ -41,7 +41,7 @@ gulp.task('views', function() {
 gulp.task('sass', function () {
     gulp.src('app/styles/**/*.scss')
         .pipe(sass().on('error', sass.logError))
-        .pipe(gulp.dest('dist/styles'));
+        .pipe(gulp.dest('dist/public/styles'));
 });
 
 gulp.task('dev', function() {
